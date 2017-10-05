@@ -5,15 +5,21 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="dotnet-stdocs" Version="1.0.1" />
     <PackageReference Include="dotnet-storyteller" Version="1.2.5" />
     <PackageReference Include="StoryTeller" Version="4.3.2" />
     <PackageReference Include="Storyteller.AspNetCore" Version="1.2.1" />
     <PackageReference Include="StorytellerRunner" Version="1.2.5" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0" />
+    <PackageReference Include="xunit" Version="2.3.0-rc3-build3818" />
   </ItemGroup>
-
+<ItemGroup>
+    <DotNetCliToolReference Include="dotnet-stdocs" Version="1.0.1" />
+    <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.0-rc3-build3818" />
+</ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WebApp\WebApp.csproj" />
+    <ProjectReference Include="..\SiteForTest\SiteForTest.csproj" />
   </ItemGroup>
 
 </Project>
