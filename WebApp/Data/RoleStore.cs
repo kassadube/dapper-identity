@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
+using Microsoft.Data.Sqlite;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,7 +24,7 @@ namespace WebApp.Data
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            using (var connection = new SqlConnection(_connectionString))
+            using (var connection = new SqliteConnection(_connectionString))
             {
                 await connection.OpenAsync(cancellationToken);
                 role.Id = await connection.QuerySingleAsync<int>($@"INSERT INTO [ApplicationRole] ([Name], [NormalizedName])
@@ -39,7 +39,7 @@ namespace WebApp.Data
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            using (var connection = new SqlConnection(_connectionString))
+            using (var connection = new SqliteConnection(_connectionString))
             {
                 await connection.OpenAsync(cancellationToken);
                 await connection.ExecuteAsync($@"UPDATE [ApplicationRole] SET
@@ -55,7 +55,7 @@ namespace WebApp.Data
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            using (var connection = new SqlConnection(_connectionString))
+            using (var connection = new SqliteConnection(_connectionString))
             {
                 await connection.OpenAsync(cancellationToken);
                 await connection.ExecuteAsync($"DELETE FROM [ApplicationRole] WHERE [Id] = @{nameof(ApplicationRole.Id)}", role);
@@ -95,7 +95,7 @@ namespace WebApp.Data
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            using (var connection = new SqlConnection(_connectionString))
+            using (var connection = new SqliteConnection(_connectionString))
             {
                 await connection.OpenAsync(cancellationToken);
                 return await connection.QuerySingleOrDefaultAsync<ApplicationRole>($@"SELECT * FROM [ApplicationRole]
@@ -107,7 +107,7 @@ namespace WebApp.Data
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            using (var connection = new SqlConnection(_connectionString))
+            using (var connection = new SqliteConnection(_connectionString))
             {
                 await connection.OpenAsync(cancellationToken);
                 return await connection.QuerySingleOrDefaultAsync<ApplicationRole>($@"SELECT * FROM [ApplicationRole]
