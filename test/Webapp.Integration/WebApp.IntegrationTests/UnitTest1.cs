@@ -19,14 +19,14 @@ private readonly HttpClient _client;
         public UnitTest1()
         {
             var config = new ConfigurationBuilder()            
-            .SetBasePath(Path.Combine(Directory.GetCurrentDirectory().ToString(), @"..\..\..\..\..\webapp"))
+            .SetBasePath(Path.Combine(Directory.GetCurrentDirectory().ToString(), @"..\..\..\..\..\..\webapp"))
             .AddJsonFile("appsettings.testing.json", optional: true)
             .Build();
             _mockPipeline.Initialize();
              _server = new TestServer(
                  new WebHostBuilder()
                  .UseConfiguration(config)
-                    .UseStartup<StartupTest>().UseContentRoot(@"..\..\..\..\..\webapp"));
+                    .UseStartup<StartupTest>().UseContentRoot(@"..\..\..\..\..\..\webapp"));
             _client = _server.CreateClient();
         }
 
