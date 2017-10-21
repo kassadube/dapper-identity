@@ -15,6 +15,7 @@ using WebApp.Services;
 
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
+using System.Net;
 
 namespace WebApp
 {
@@ -32,21 +33,68 @@ namespace WebApp
         {
             services.AddTransient<IUserStore<ApplicationUser>, UserStore>();
             services.AddTransient<IRoleStore<ApplicationRole>, RoleStore>();
-
-            services.AddIdentity<ApplicationUser, ApplicationRole>()                
+            
+            services.AddIdentity<ApplicationUser, ApplicationRole>(cfg => {
+                cfg.c
+            })                
                 .AddDefaultTokenProviders();
-            services.ConfigureApplicationCookie(options =>
+                
+            services.Configure<CookieAuthenticationOptions>(options =>
             {
+                options.Events= new CookieAuthenticationEvents
+                {
+                     
+                OnRedirectToLogin = ctx =>
+                {
+                    ctx.Response.StatusCode = (int) HttpStatusCode.Unauthorized;
+                    if ( ctx.Response.StatusCode == (int) HttpStatusCode.OK)
+                    {
+                        ctx.Response.StatusCode = (int) HttpStatusCode.Unauthorized;
+                    }
+                    return Task.FromResult(0);
+                    /*if (ctx.Request.Path.StartsWithSegments("/api") &&
+                        ctx.Response.StatusCode == (int) HttpStatusCode.OK)
+                    {
+                        ctx.Response.StatusCode = (int) HttpStatusCode.Unauthorized;
+                    }
+                    else
+                    {
+                        ctx.Response.Redirect(ctx.RedirectUri);
+                    }
+                    return Task.FromResult(0);
+                    */
+                }
+                };
+                options.LoginPath = PathString.FromUriComponent("/Auth/Login");
+                options.Cookie.Name = "YourAppCookieName";
+                options.Cookie.HttpOnly = true;
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+               // options.LoginPath = "/Account/Login";
+                options.LogoutPath = "/Account/Logout";
+                options.AccessDeniedPath = "/Account/AccessDenied";
+                options.SlidingExpiration = true;
+               
+                //options.ReturnUrlParameter = CookieAuthenticationDefaults..ReturnUrlParameter;
+            });
+
+/**/
+            
+            
+
+           /* services.ConfigureApplicationCookie(options =>
+            {
+                
                 options.Cookie.Name = "YourAppCookieName";
                 options.Cookie.HttpOnly = true;
                 options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
                 options.LoginPath = "/Account/Login";
                 options.LogoutPath = "/Account/Logout";
                 options.AccessDeniedPath = "/Account/AccessDenied";
-                options.SlidingExpiration = true;
+                options.SlidingExpiration = true;                
+               // options.
                 // Requires `using Microsoft.AspNetCore.Authentication.Cookies;`
                 options.ReturnUrlParameter = CookieAuthenticationDefaults.ReturnUrlParameter;
-            });
+            });*/
             // Add application services.
             services.AddTransient<IEmailSender, EmailSender>();
 

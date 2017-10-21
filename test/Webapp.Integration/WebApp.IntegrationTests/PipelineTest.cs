@@ -8,61 +8,49 @@ using Xunit;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using System.IO;
+using Xunit.Abstractions;
+using System.Net;
 
 namespace WebApp.IntegrationTests
 {
-    public class UnitTest1 : IDisposable
+    public class PipelineTest : IDisposable
     {
+        const string Category = "Authorize endpoint";
         SitePipeline _mockPipeline = new SitePipeline();
-        private readonly TestServer _server;
-        private readonly HttpClient _client;
+        private readonly ITestOutputHelper output;
         
-        public UnitTest1()
+        public PipelineTest(ITestOutputHelper output)
         {
-            var config = new ConfigurationBuilder()            
-            .SetBasePath(Path.Combine(Directory.GetCurrentDirectory().ToString(), @"..\..\..\..\..\..\webapp"))
-            .AddJsonFile("appsettings.testing.json", optional: true)
-            .Build();
+            this.output = output;
             _mockPipeline.Initialize();
-             _server = new TestServer(
-                 new WebHostBuilder()
-                 .UseConfiguration(config)
-                    .UseStartup<Startup>().UseContentRoot(@"..\..\..\..\..\..\webapp"));
-            _client = _server.CreateClient();
+            
         }
 
         [Fact()]
-        public async Task ttt()
+         [Trait("Category", Category)]
+        public async Task HomePage200()
         {
-            Console.WriteLine( _client.BaseAddress);
-            var response = await _client.GetAsync("/home/index2");
+           var response = await _mockPipeline.Client.GetAsync(SitePipeline.HomePage);
+           output.WriteLine("This is output from {0}", response.StatusCode);
             response.EnsureSuccessStatusCode();
-
+        }
+        
+        [Fact()]
+         [Trait("Category", Category)]
+        public async Task AuthorizePage()
+        {
+           //var response = await _mockPipeline.Client.GetAsync(SitePipeline.AuthorizeUrl);
+          // output.WriteLine("This is output from {0}", response.StatusCode);
+          // _mockPipeline.BrowserClient.AllowAutoRedirect = false;
+           var response = await _mockPipeline.Client.GetAsync(SitePipeline.AuthorizeUrl);
+            response.StatusCode.Should().Be(HttpStatusCode.Redirect);
             var responseString = await response.Content.ReadAsStringAsync();
-            responseString.Should().Be("{\"id\":3,\"url\":\"http://localhost/home/index2\",\"conn\":\"Data Source=database.test.db\",\"env\":\"Development\"}");
-            //return await response.Content.ReadAsStringAsync();
-        }
-        [Fact(DisplayName="tttt")]
-        public void PassingTest()
-        {
+            Assert.Equal(responseString, "fdf");
             
-            Assert.Equal(4, Add(2, 2));
-        }
-
-        [Fact(Skip="reason")]
-        public void FailingTest()
-        {
-            Assert.Equal(5, Add(2, 2));
-        }
-
-        int Add(int x, int y)
-        {
-            return x + y;
         }
 
         #region IDisposable Support
         private bool disposedValue = false; // To detect redundant calls
-
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)
@@ -70,8 +58,8 @@ namespace WebApp.IntegrationTests
                 if (disposing)
                 {
                     // TODO: dispose managed state (managed objects).
-                    _server.Dispose();
-                    _client.Dispose();
+                    _mockPipeline.Server.Dispose();
+                    _mockPipeline.Client.Dispose();
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.

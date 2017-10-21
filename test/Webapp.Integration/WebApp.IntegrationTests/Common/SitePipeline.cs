@@ -15,6 +15,8 @@ using System.Net;
 using IdentityModel.Client;
 using FluentAssertions;
 using System.Threading;
+using System.IO;
+using Microsoft.Extensions.Configuration;
 
 namespace WebApp.IntegrationTests.Common
 {
@@ -24,6 +26,9 @@ namespace WebApp.IntegrationTests.Common
         public const string BaseUrl = "https://server";
         public const string LoginPage = BaseUrl + "/account/login";
         public const string ErrorPage = BaseUrl + "/home/error";
+        public const string HomePage = BaseUrl + "/home/index2";
+
+        public const string AuthorizeUrl = BaseUrl + "/manage/index";
         public TestServer Server { get; set; }
         public HttpMessageHandler Handler { get; set; }
         public BrowserClient BrowserClient { get; set; }
@@ -41,9 +46,15 @@ namespace WebApp.IntegrationTests.Common
            // var builder = new WebHostBuilder();
            // builder.ConfigureServices(ConfigureServices);
             
-
-            Server =new TestServer(new WebHostBuilder()
-            .UseStartup<Startup>());
+            var config = new ConfigurationBuilder()            
+            .SetBasePath(Path.Combine(Directory.GetCurrentDirectory().ToString(), @"..\..\..\..\..\..\webapp"))
+            .AddJsonFile("appsettings.testing.json", optional: true)
+            .Build();
+            
+            Server = new TestServer(
+                 new WebHostBuilder()
+                 .UseConfiguration(config)
+                    .UseStartup<Startup>().UseContentRoot(@"..\..\..\..\..\..\webapp"));
             Handler = Server.CreateHandler();
             
             BrowserClient = new BrowserClient(new BrowserHandler(Handler));
