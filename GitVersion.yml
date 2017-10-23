@@ -1,0 +1,7 @@
+assembly-versioning-scheme: None
+mode: ContinuousDeployment
+next-version: 0.2.0
+branches:
+  dev(elop)?(ment)?$: {}
+ignore:
+  sha: []
