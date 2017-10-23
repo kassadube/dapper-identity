@@ -10,4 +10,4 @@ using System.Reflection;
 
 [assembly: AssemblyFileVersion("0.1.0.0")]
 [assembly: AssemblyVersion("0.1.0.0")]
-[assembly: AssemblyInformationalVersion("0.1.0-testing.1+18.Branch.testing.Sha.948d9d0fa4323191c78ba02d92ceabe42630d577")]
+[assembly: AssemblyInformationalVersion("0.1.0-testing.1+20.Branch.testing.Sha.935e85505c34e4930eb13a0a8d0b47c9e2fe9175")]
