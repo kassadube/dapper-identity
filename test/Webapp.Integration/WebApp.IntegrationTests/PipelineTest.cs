@@ -45,7 +45,7 @@ namespace WebApp.IntegrationTests
            var response = await _mockPipeline.Client.GetAsync(SitePipeline.AuthorizeUrl);
             response.StatusCode.Should().Be(HttpStatusCode.Redirect);
             var responseString = await response.Content.ReadAsStringAsync();
-            Assert.Equal(responseString, "fdf");
+           
             
         }
 
