@@ -43,7 +43,7 @@ namespace WebApp.IntegrationTests
           // output.WriteLine("This is output from {0}", response.StatusCode);
           // _mockPipeline.BrowserClient.AllowAutoRedirect = false;
            var response = await _mockPipeline.Client.GetAsync(SitePipeline.AuthorizeUrl);
-            response.StatusCode.Should().Be(HttpStatusCode.Redirect);
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
             var responseString = await response.Content.ReadAsStringAsync();
            
             

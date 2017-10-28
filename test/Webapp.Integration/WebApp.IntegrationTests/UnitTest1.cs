@@ -39,7 +39,7 @@ namespace WebApp.IntegrationTests
             response.EnsureSuccessStatusCode();
 
             var responseString = await response.Content.ReadAsStringAsync();
-            responseString.Should().Be("{\"id\":3,\"url\":\"http://localhost/home/index2\",\"conn\":\"Data Source=database.test.db\",\"env\":\"Development\"}");
+            responseString.Should().Be("{\"id\":3,\"url\":\"http://localhost/home/index2\",\"conn\":\"Data Source=DB/database.test.db\",\"env\":\"Development\"}");
             //return await response.Content.ReadAsStringAsync();
         }
         [Fact(DisplayName="tttt")]
