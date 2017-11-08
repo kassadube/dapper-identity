@@ -5,17 +5,17 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using WebApp.Data;
 using WebApp.Models;
 using WebApp.Services;
-
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using System.Net;
+using Microsoft.IdentityModel.Tokens;
 
 namespace WebApp
 {
@@ -33,67 +33,45 @@ namespace WebApp
         {
             services.AddTransient<IUserStore<ApplicationUser>, UserStore>();
             services.AddTransient<IRoleStore<ApplicationRole>, RoleStore>();
-            
-            services.AddIdentity<ApplicationUser, ApplicationRole>()                
-                .AddDefaultTokenProviders();
+            services.AddIdentity<ApplicationUser, ApplicationRole>(); 
                 
-            services.Configure<CookieAuthenticationOptions>(options =>
+            services.AddAuthentication(options =>
             {
-                options.Events= new CookieAuthenticationEvents
-                {
-                     
-                OnRedirectToLogin = ctx =>
-                {
-                    ctx.Response.StatusCode = (int) HttpStatusCode.Unauthorized;
-                    if ( ctx.Response.StatusCode == (int) HttpStatusCode.OK)
-                    {
-                        ctx.Response.StatusCode = (int) HttpStatusCode.Unauthorized;
-                    }
-                    return Task.FromResult(0);
-                    /*if (ctx.Request.Path.StartsWithSegments("/api") &&
-                        ctx.Response.StatusCode == (int) HttpStatusCode.OK)
-                    {
-                        ctx.Response.StatusCode = (int) HttpStatusCode.Unauthorized;
-                    }
-                    else
-                    {
-                        ctx.Response.Redirect(ctx.RedirectUri);
-                    }
-                    return Task.FromResult(0);
-                    */
-                }
-                };
-                options.LoginPath = PathString.FromUriComponent("/Auth/Login");
-                options.Cookie.Name = "YourAppCookieName";
-                options.Cookie.HttpOnly = true;
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
-               // options.LoginPath = "/Account/Login";
-                options.LogoutPath = "/Account/Logout";
-                options.AccessDeniedPath = "/Account/AccessDenied";
-                options.SlidingExpiration = true;
-               
-                //options.ReturnUrlParameter = CookieAuthenticationDefaults..ReturnUrlParameter;
-            });
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;                
+            })
+                .AddJwtBearer(options => {
+                    options.RequireHttpsMetadata = false;
 
-/**/
-            
-            
+                    options.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateIssuer = true,
+                            ValidateAudience = true,
+                            ValidateLifetime = true,
+                            
+                            ValidateIssuerSigningKey = true,
+                            
 
-           /* services.ConfigureApplicationCookie(options =>
-            {
-                
-                options.Cookie.Name = "YourAppCookieName";
-                options.Cookie.HttpOnly = true;
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
-                options.LoginPath = "/Account/Login";
-                options.LogoutPath = "/Account/Logout";
-                options.AccessDeniedPath = "/Account/AccessDenied";
-                options.SlidingExpiration = true;                
-               // options.
-                // Requires `using Microsoft.AspNetCore.Authentication.Cookies;`
-                options.ReturnUrlParameter = CookieAuthenticationDefaults.ReturnUrlParameter;
-            });*/
-            // Add application services.
+                            ValidIssuer = "Fiver.Security.Bearer",
+                            ValidAudience = "Fiver.Security.Bearer",
+                            IssuerSigningKey = JwtSecurityKey.Create("fiver-secret-key")
+                        };
+
+                        options.Events = new JwtBearerEvents
+                        {
+                            OnAuthenticationFailed = context =>
+                            {
+                                Console.WriteLine("OnAuthenticationFailed: " + context.Exception.Message);
+                                return Task.CompletedTask;
+                            },
+                            OnTokenValidated = context =>
+                            {
+                                Console.WriteLine("OnTokenValidated: " + context.SecurityToken);
+                                return Task.CompletedTask;
+                            }
+                        };
+                });
+            
             services.AddTransient<IEmailSender, EmailSender>();
 
             services.AddMvc();
