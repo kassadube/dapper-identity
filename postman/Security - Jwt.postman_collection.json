@@ -8,9 +8,9 @@
 	},
 	"item": [
 		{
-			"name": "http://localhost:5000/token",
+			"name": "http://localhost:51822/token",
 			"request": {
-				"url": "http://localhost:5000/token",
+				"url": "http://localhost:51822/token",
 				"method": "POST",
 				"header": [
 					{
@@ -28,9 +28,9 @@
 			"response": []
 		},
 		{
-			"name": "http://localhost:5000/api/movies",
+			"name": "http://localhost:51822/api/movies",
 			"request": {
-				"url": "http://localhost:5000/api/movies",
+				"url": "http://localhost:51822/api/movies",
 				"method": "GET",
 				"header": [
 					{
